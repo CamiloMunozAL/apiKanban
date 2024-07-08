@@ -16,7 +16,7 @@ CREATE TABLE sections(
 CREATE TABLE tasks(
     id_task serial primary key,
     title_task varchar(50) not null,
-    description_task TEXT not null,
+    description_task TEXT,
     id_section integer not null,
     foreign key (id_section) references sections(id_section) on delete cascade on update cascade
 );

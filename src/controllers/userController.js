@@ -13,16 +13,16 @@ create table users (
 */
 
 
-// //Obtener todos los usuarios
-// const getUsers = async (req,res)=>{
-//     try{
-//         console.log("Getting users");
-//         const result = await pool.query("SELECT id_user,name_user,user_email FROM users");
-//         res.status(200).json(result.rows); //Enviar respuesta
-//     }catch(error){
-//         res.status(500).send("Error getting users");
-//     }
-// }
+//Obtener todos los usuarios
+const getUsers = async (req,res)=>{
+    try{
+        console.log("Getting users");
+        const result = await pool.query("SELECT id_user,name_user,user_email FROM users");
+        res.status(200).json(result.rows); //Enviar respuesta
+    }catch(error){
+        res.status(500).send("Error getting users");
+    }
+}
 
 
 
@@ -91,4 +91,4 @@ const updateUserProfile = async (req, res) => {
 }
 
 
-export { getUserProfile, updateUserProfile};
+export { getUserProfile, updateUserProfile,getUsers};

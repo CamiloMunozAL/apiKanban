@@ -28,6 +28,8 @@ const loginSchema = z.object({
 
 
 
+
+
 function validateRegisterSchema(body){
     return registerSchema.safeParse(body);//Devuelve si hay un error o hay un valor
 }
@@ -35,5 +37,7 @@ function validateRegisterSchema(body){
 function validateLoginSchema(body){
     return loginSchema.safeParse(body);
 }
+
+
 
 export {validateRegisterSchema,validateLoginSchema};

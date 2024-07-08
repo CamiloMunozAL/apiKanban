@@ -7,8 +7,9 @@ const authMiddleware = (req, res, next) => {
   }
   try {
     const user = jwt.verify(token, JWT_SECRET);
+    //Si el token es válido, se guarda el usuario en req.user, haciendo que esté disponible en los controladores
     req.user = user;
-    console.log(user);
+    // console.log(user);
     next();
   } catch (error) {
     return res.status(401).send("Unauthorized");

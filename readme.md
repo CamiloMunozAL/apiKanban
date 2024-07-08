@@ -1,111 +1,126 @@
 # Kanban Board API
 
-Esta es la documentación de la API para la aplicación web de tablero Kanban. La API permite a los usuarios crear, modificar y gestionar "cards" y "columns", e incorpora un sistema completo de autenticación y autorización.
+This is the documentation for the API of the Kanban board web application. The API allows users to create, modify, and manage cards and columns, and incorporates a complete authentication and authorization system.
+deploy: https://apikanban.onrender.com
+use: https://apikanban.onrender.com/api
 
 ## Endpoints
 
-### Autenticación y Autorización
+# Authentication API Endpoints
 
-#### POST /api/register
-### Request
-This API endpoint makes an HTTP POST request to localhost:3000/api/register to register a new user. The request body should include the following parameters:
+## Overview
 
-- `username`: (text) The username of the user to be registered.
-    
-- `email`: (text) The email address of the user to be registered.
-    
-- `password`: (text) The password of the user to be registered.
-    
+This API provides endpoints for user authentication, including registration, login, and logout. It handles user validation, password hashing, token generation, and cookie management.
 
-### Response
+## Functions
 
-The response will include the registration status and any additional details related to the registration process.
+### Register User
 
+- **URL:** `POST /auth/register`
+- **Description:** Registers a new user with the provided username, email, and password.
+- **Request Body:**
+  "username": "string",
+  "email": "string",
+  "password": "string"
+- **Responses:**
+  - `201 Created`: User successfully registered.
+  - `400 Bad Request`: Validation error or missing parameters.
+  - `409 Conflict`: Username or email already exists.
+  - `500 Internal Server Error`: Server error.
 
-#### POST /api/login
-### API Request Description
+### Login User
 
-This API endpoint is a POST request to localhost:3000/api/login. It is used for user authentication by providing the email and password in the request body.
+- **URL:** `POST /auth/login`
+- **Description:** Logs in a user with the provided email and password, generating a JWT token for authentication.
+- **Request Body:**
+  "email": "string",
+  "password": "string"
+- **Responses:**
+  - `200 OK`: User successfully logged in, returns a JWT token.
+  - `400 Bad Request`: Validation error or missing parameters.
+  - `401 Unauthorized`: Invalid credentials.
+  - `500 Internal Server Error`: Server error.
 
-#### Request Body
+### Logout User
 
-- **email** (text) - The email address of the user.
-    
-- **password** (text) - The password of the user.
-    
+- **URL:** `GET /auth/logout`
+- **Description:** Logs out the currently authenticated user by clearing the access token cookie.
+- **Responses:**
+  - `200 OK`: User successfully logged out.
+  - `500 Internal Server Error`: Server error.
 
-#### Response
+## Error Handling
 
-Upon successful execution, the API returns a 200 status with a JSON response containing a message.
+- `400 Bad Request`: Invalid request format or missing parameters.
+- `401 Unauthorized`: Invalid credentials or unauthorized access.
+- `409 Conflict`: User already exists (during registration).
+- `500 Internal Server Error`: Server encountered an unexpected condition.
+
 
 
 # Section API Endpoints
 
-## Endpoints
+## Overview
 
-### Create a Section
+This API provides endpoints to manage sections associated with users in a database. It includes functionalities for creating, retrieving, updating, and deleting sections, as well as retrieving all sections of a user.
 
-- **URL:** `/sections/:id_user`
-- **Method:** `POST`
-- **Middleware:** `authMiddleware`
-- **Description:** Creates a new section for a user.
-- **Request Parameters:**
-  - `id_user` (path): The ID of the user for whom the section is being created.
-- **Request Body:** JSON object containing the details of the section.
+## Functions
+
+### Create Section
+
+- **URL:** `POST /sections/:id_user`
+- **Description:** Creates a new section for a specified user.
+- **Request Body:**
+  "title_section": "string"
+- **Parameters:**
+  - `id_user` (path): ID of the user to whom the section belongs.
 - **Responses:**
   - `201 Created`: Section successfully created.
   - `400 Bad Request`: Validation error or missing parameters.
-  - `401 Unauthorized`: User is not authenticated.
+  - `401 Unauthorized`: Invalid user ID or unauthorized operation.
   - `500 Internal Server Error`: Server error.
 
 ### Get Sections
 
-- **URL:** `/sections/:id_user`
-- **Method:** `GET`
-- **Middleware:** `authMiddleware`
-- **Description:** Retrieves all sections for a user.
-- **Request Parameters:**
-  - `id_user` (path): The ID of the user whose sections are being retrieved.
+- **URL:** `GET /sections/:id_user`
+- **Description:** Retrieves all sections belonging to a specified user.
+- **Parameters:**
+  - `id_user` (path): ID of the user whose sections are being retrieved.
 - **Responses:**
   - `200 OK`: Successfully retrieved sections.
-  - `401 Unauthorized`: User is not authenticated.
+  - `400 Bad Request`: Invalid user ID.
+  - `401 Unauthorized`: Unauthorized access.
   - `500 Internal Server Error`: Server error.
 
-### Update a Section
+### Update Section
 
-- **URL:** `/sections/:id_section`
-- **Method:** `PUT`
-- **Middleware:** `authMiddleware`
-- **Description:** Updates a specific section.
-- **Request Parameters:**
-  - `id_section` (path): The ID of the section to be updated.
-- **Request Body:** JSON object containing the updated details of the section.
+- **URL:** `PUT /sections/:id_section`
+- **Description:** Updates the title of a specific section.
+- **Request Body:**
+  "title_section": "string"
+- **Parameters:**
+  - `id_section` (path): ID of the section to be updated.
 - **Responses:**
   - `200 OK`: Section successfully updated.
   - `400 Bad Request`: Validation error or missing parameters.
-  - `401 Unauthorized`: User is not authenticated.
-  - `404 Not Found`: Section not found.
+  - `401 Unauthorized`: User is not authorized to update the section.
   - `500 Internal Server Error`: Server error.
 
-### Delete a Section
+### Delete Section
 
-- **URL:** `/sections/:id_section`
-- **Method:** `DELETE`
-- **Middleware:** `authMiddleware`
+- **URL:** `DELETE /sections/:id_section`
 - **Description:** Deletes a specific section.
-- **Request Parameters:**
-  - `id_section` (path): The ID of the section to be deleted.
+- **Parameters:**
+  - `id_section` (path): ID of the section to be deleted.
 - **Responses:**
   - `200 OK`: Section successfully deleted.
-  - `401 Unauthorized`: User is not authenticated.
-  - `404 Not Found`: Section not found.
+  - `400 Bad Request`: Invalid section ID.
+  - `401 Unauthorized`: User is not authorized to delete the section.
   - `500 Internal Server Error`: Server error.
 
 ### Get All Sections of User
 
-- **URL:** `/sections`
-- **Method:** `GET`
-- **Middleware:** `authMiddleware`
+- **URL:** `GET /sections`
 - **Description:** Retrieves all sections of the authenticated user.
 - **Responses:**
   - `200 OK`: Successfully retrieved all sections of the user.
@@ -113,89 +128,86 @@ Upon successful execution, the API returns a 200 status with a JSON response con
   - `500 Internal Server Error`: Server error.
 
 
+
 # Task API Endpoints
 
-## Endpoints
+## Overview
 
-### Create a Task
+This API provides endpoints to manage tasks associated with sections owned by users in a database. It includes functionalities for creating, retrieving, updating, and deleting tasks, as well as retrieving all tasks of a user.
 
-- **URL:** `/tasks/:id_section`
-- **Method:** `POST`
-- **Middleware:** `authMiddleware`
-- **Description:** Creates a new task within a section.
-- **Request Parameters:**
-  - `id_section` (path): The ID of the section where the task is being created.
-- **Request Body:** JSON object containing the details of the task.
+## Functions
+
+### Create Task
+
+- **URL:** `POST /tasks/:id_section`
+- **Description:** Creates a new task within a specified section.
+- **Request Body:**
+  "title_task": "string",
+  "description_task": "string"
+- **Parameters:**
+  - `id_section` (path): ID of the section where the task will be created.
 - **Responses:**
   - `201 Created`: Task successfully created.
   - `400 Bad Request`: Validation error or missing parameters.
-  - `401 Unauthorized`: User is not authenticated.
+  - `401 Unauthorized`: Invalid section ID or unauthorized operation.
   - `500 Internal Server Error`: Server error.
 
 ### Get Tasks
 
-- **URL:** `/tasks/:id_section`
-- **Method:** `GET`
-- **Middleware:** `authMiddleware`
-- **Description:** Retrieves all tasks within a section.
-- **Request Parameters:**
-  - `id_section` (path): The ID of the section whose tasks are being retrieved.
+- **URL:** `GET /tasks/:id_section`
+- **Description:** Retrieves all tasks within a specified section.
+- **Parameters:**
+  - `id_section` (path): ID of the section whose tasks are being retrieved.
 - **Responses:**
   - `200 OK`: Successfully retrieved tasks.
-  - `401 Unauthorized`: User is not authenticated.
+  - `400 Bad Request`: Invalid section ID.
+  - `401 Unauthorized`: Unauthorized access.
   - `500 Internal Server Error`: Server error.
 
-### Update a Task
+### Update Task
 
-- **URL:** `/tasks/:id_task`
-- **Method:** `PUT`
-- **Middleware:** `authMiddleware`
-- **Description:** Updates a specific task.
-- **Request Parameters:**
-  - `id_task` (path): The ID of the task to be updated.
-- **Request Body:** JSON object containing the updated details of the task.
+- **URL:** `PUT /tasks/:id_task`
+- **Description:** Updates the title and description of a specific task.
+- **Request Body:**
+  "title_task": "string",
+  "description_task": "string"
+- **Parameters:**
+  - `id_task` (path): ID of the task to be updated.
 - **Responses:**
   - `200 OK`: Task successfully updated.
   - `400 Bad Request`: Validation error or missing parameters.
-  - `401 Unauthorized`: User is not authenticated.
-  - `404 Not Found`: Task not found.
+  - `401 Unauthorized`: User is not authorized to update the task.
   - `500 Internal Server Error`: Server error.
 
-### Delete a Task
+### Delete Task
 
-- **URL:** `/tasks/:id_task`
-- **Method:** `DELETE`
-- **Middleware:** `authMiddleware`
+- **URL:** `DELETE /tasks/:id_task`
 - **Description:** Deletes a specific task.
-- **Request Parameters:**
-  - `id_task` (path): The ID of the task to be deleted.
+- **Parameters:**
+  - `id_task` (path): ID of the task to be deleted.
 - **Responses:**
   - `200 OK`: Task successfully deleted.
-  - `401 Unauthorized`: User is not authenticated.
-  - `404 Not Found`: Task not found.
+  - `400 Bad Request`: Invalid task ID.
+  - `401 Unauthorized`: User is not authorized to delete the task.
   - `500 Internal Server Error`: Server error.
 
 ### Update Task Section
 
-- **URL:** `/tasks/:id_task`
-- **Method:** `PATCH`
-- **Middleware:** `authMiddleware`
-- **Description:** Updates the section of a specific task.
-- **Request Parameters:**
-  - `id_task` (path): The ID of the task whose section is being updated.
-- **Request Body:** JSON object containing the updated section details.
+- **URL:** `PATCH /tasks/:id_task`
+- **Description:** Moves a specific task to a different section.
+- **Request Body:**
+  "id_section": "integer"
+- **Parameters:**
+  - `id_task` (path): ID of the task to be moved.
 - **Responses:**
-  - `200 OK`: Task section successfully updated.
+  - `200 OK`: Task successfully moved to the new section.
   - `400 Bad Request`: Validation error or missing parameters.
-  - `401 Unauthorized`: User is not authenticated.
-  - `404 Not Found`: Task not found.
+  - `401 Unauthorized`: User is not authorized to move the task or invalid section ID.
   - `500 Internal Server Error`: Server error.
 
 ### Get All Tasks of User
 
-- **URL:** `/tasks`
-- **Method:** `GET`
-- **Middleware:** `authMiddleware`
+- **URL:** `GET /tasks`
 - **Description:** Retrieves all tasks of the authenticated user.
 - **Responses:**
   - `200 OK`: Successfully retrieved all tasks of the user.
@@ -203,33 +215,53 @@ Upon successful execution, the API returns a 200 status with a JSON response con
   - `500 Internal Server Error`: Server error.
 
 
+
 # User API Endpoints
 
-## Endpoints
+## Overview
+
+This API provides endpoints for managing user profiles and retrieving user information from the database. It includes functions for getting all users, fetching user profiles, and updating user profiles.
+
+## Functions
+
 
 ### Get User Profile
 
-- **URL:** `/user/profile`
-- **Method:** `GET`
-- **Description:** Retrieves the profile information of the authenticated user.
-- **Middleware:** `authMiddleware` (Assumed to be required for authentication)
+- **URL:** `GET /user/profile`
+- **Description:** Retrieves the profile of the authenticated user.
 - **Responses:**
-  - `200 OK`: Successfully retrieved user profile.
-  - `401 Unauthorized`: User is not authenticated.
-  - `500 Internal Server Error`: Server error.
+  - `200 OK`: Returns the user profile object.
+  - `404 Not Found`: User not found.
+  - `500 Internal Server Error`: Server encountered an unexpected condition.
 
 ### Update User Profile
 
-- **URL:** `/user/profile`
-- **Method:** `PUT`
-- **Description:** Updates the profile information of the authenticated user.
-- **Middleware:** `authMiddleware` (Assumed to be required for authentication)
-- **Request Body:** JSON object containing the updated details of the user profile.
+- **URL:** `PUT /user/profile`
+- **Description:** Updates the profile of the authenticated user.
+- **Request Body:**
+  "username": "string",
+  "email": "string",
+  "password": "string"
 - **Responses:**
-  - `200 OK`: User profile successfully updated.
+  - `200 OK`: User profile successfully updated. Returns a success message.
   - `400 Bad Request`: Validation error or missing parameters.
-  - `401 Unauthorized`: User is not authenticated.
-  - `500 Internal Server Error`: Server error.
+  - `500 Internal Server Error`: Server encountered an unexpected condition.
+
+### Get All Users
+
+- **URL:** `GET /user`
+- **Description:** Retrieves all users from the database.
+- **Responses:**
+  - `200 OK`: Returns an array of user objects.
+  - `500 Internal Server Error`: Server encountered an unexpected condition.
+
+
+## Error Handling
+
+- `400 Bad Request`: Invalid request format or missing parameters.
+- `404 Not Found`: User profile not found.
+- `500 Internal Server Error`: Server encountered an unexpected condition.
+
 
 
 # Database Configuration

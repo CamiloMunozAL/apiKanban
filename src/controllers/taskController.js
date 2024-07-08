@@ -1,14 +1,3 @@
-/*
-Características de la Aplicación:
-Los usuarios pueden crear "cards" con título, descripción en formato markdown, y asignarlas a diferentes "columns" (estados).
-Los usuarios pueden crear, modificar y eliminar "columns".
-Autenticación y autorización para asegurar que solo el propietario de los recursos pueda modificarlos.
-Sistema de registro y perfil de usuario donde se pueda modificar la información personal.
-Primera Fase del Proyecto:
-Desarrollar la API REST que permita realizar todas las operaciones mencionadas.
-Asegurar que la API cumpla con los principios REST, manejo de errores y estándares de seguridad.
-*/
-
 /* modelo de la card o tarea
 CREATE TABLE tasks(
     id_task serial primary key,
@@ -20,12 +9,27 @@ CREATE TABLE tasks(
 */
 
 import { pool } from "../db.js";
+import { z } from "zod";
 
 const createTask = async (req, res) => {
     const { title_task, description_task} = req.body;
     const { id_section } = req.params;
     const id_user = req.user.id;
-    console.log(req.user);
+    
+    //Validar datos de entrada
+    const schema = z.object({ title_task: z.string().min(1).max(50), description_task: z.string().min(1) });
+    const validate = schema.safeParse(req.body);
+    if (!validate.success) {
+        return res.status(400).send(validate.error.errors);
+    }
+
+    //Validar id_section
+    const id_section_schema = z.string().regex(/^\d+$/);
+    const id_section_validate = id_section_schema.safeParse(id_section);
+    if (!id_section_validate.success) {
+        return res.status(400).send("Invalid id_section");
+    }
+
     try {
         //Verificar que el usuario sea el dueño de la sección
         const sectionResult = await pool.query("SELECT * FROM sections WHERE id_section = $1 and id_user = $2", [id_section, id_user]);
@@ -45,6 +49,13 @@ const createTask = async (req, res) => {
 const getTasks = async (req, res) => {
     const {id_section} = req.params;
     const id_user = req.user.id;
+
+    //Validar id_section
+    const id_section_schema = z.string().regex(/^\d+$/);
+    const id_section_validate = id_section_schema.safeParse(id_section);
+    if (!id_section_validate.success) {
+        return res.status(400).send("Invalid id_section");
+    }
     try {
         //Verificar que el usuario sea el dueño de la sección
         const sectionResult = await pool.query("SELECT * FROM sections WHERE id_section = $1 and id_user = $2", [id_section, id_user]);
@@ -64,6 +75,21 @@ const updateTask = async (req, res) => {
     const { title_task, description_task } = req.body;
     const { id_task } = req.params;
     const id_user = req.user.id;
+
+    //Validar datos de entrada
+    const schema = z.object({ title_task: z.string().min(1).max(50), description_task: z.string().min(1) });
+    const validate = schema.safeParse(req.body);
+    if (!validate.success) {
+        return res.status(400).send(validate.error.errors);
+    }
+
+    //Validar id_task
+    const id_task_schema = z.string().regex(/^\d+$/);
+    const id_task_validate = id_task_schema.safeParse(id_task);
+    if (!id_task_validate.success) {
+        return res.status(400).send("Invalid id_task");
+    }
+
     try {
 
         //Verificar que el usuario sea el dueño de la tarea
@@ -85,6 +111,14 @@ const updateTask = async (req, res) => {
 const deleteTask = async (req, res) => {
     const { id_task } = req.params;
     const id_user = req.user.id;
+
+    //Validar id_task
+    const id_task_schema = z.string().regex(/^\d+$/);
+    const id_task_validate = id_task_schema.safeParse(id_task);
+    if (!id_task_validate.success) {
+        return res.status(400).send("Invalid id_task");
+    }
+
     try {
 
         //Verificar que el usuario sea el dueño de la tarea
@@ -107,6 +141,22 @@ const updateTaskSection = async (req, res) => {
     const { id_task } = req.params;
     const { id_section } = req.body;
     const id_user = req.user.id;
+
+    //Validar id_task
+    const id_task_schema = z.string().regex(/^\d+$/);
+    const id_task_validate = id_task_schema.safeParse(id_task);
+    if (!id_task_validate.success) {
+        return res.status(400).send("Invalid id_task");
+    }
+
+    //Validar id_section
+    const id_section_schema = z.string().regex(/^\d+$/);
+    const id_section_validate = id_section_schema.safeParse(id_section);
+    if (!id_section_validate.success) {
+        return res.status(400).send("Invalid id_section");
+    }
+
+
     try {
 
         //Verificar que el usuario sea el dueño de la tarea

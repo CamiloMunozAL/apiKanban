@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import {z} from "zod";
 /*
 modelo de la tabla sections
 CREATE TABLE sections(
@@ -11,7 +12,22 @@ CREATE TABLE sections(
 const createSection = async (req, res) => {
     const { title_section } = req.body;
     const {id_user} = req.params;
-    console.log(req.params);
+    //Validar datos de entrada
+    const schema = z.object({
+        title_section: z.string().min(1).max(50)
+    });
+    const validate = schema.safeParse(req.body);
+    if (!validate.success) {
+        return res.status(400).send(validate.error.errors);
+    }
+
+    //Validar id_user
+    const id_user_schema = z.string().min(1);
+    const id_user_validate = id_user_schema.safeParse(id_user);
+    if (!id_user_validate.success) {
+        return res.status(400).send("Invalid id_user");
+    }
+
     try {
         //Comparar id_user con el id_user del token
         const tokenid = req.user.id;
@@ -31,6 +47,14 @@ const createSection = async (req, res) => {
 
 const getSections = async (req, res) => {
     const {id_user} = req.params;
+
+    //Validar id_user
+    const id_user_schema = z.string().min(1);
+    const id_user_validate = id_user_schema.safeParse(id_user);
+    if (!id_user_validate.success) {
+        return res.status(400).send("Invalid id_user");
+    }
+
     try {
         //Comparar id_user con el id_user del token
         const tokenid = req.user.id;
@@ -49,6 +73,23 @@ const updateSection = async (req, res) => {
     const { title_section } = req.body;
     const { id_section } = req.params;
     const id_user = req.user.id;
+
+    //Validar datos de entrada
+    const schema = z.object({
+        title_section: z.string().min(1).max(50)
+    });
+    const validate = schema.safeParse(req.body);
+    if (!validate.success) {
+        return res.status(400).send(validate.error.errors);
+    }
+
+    //Validar id_section
+    const id_section_schema = z.string().min(1);
+    const id_section_validate = id_section_schema.safeParse(id_section);
+    if (!id_section_validate.success) {
+        return res.status(400).send("Invalid id_section");
+    }
+
     try {
 
         //Verificar que el usuario sea el dueño de la sección
@@ -69,6 +110,14 @@ const updateSection = async (req, res) => {
 const deleteSection = async (req, res) => {
     const { id_section } = req.params;
     const id_user = req.user.id;
+
+    //Validar id_section
+    const id_section_schema = z.string().regex(/^\d+$/);
+    const id_section_validate = id_section_schema.safeParse(id_section);
+    if (!id_section_validate.success) {
+        return res.status(400).send("Invalid id_section");
+    }
+
     try {
         //Verificar que el usuario sea el dueño de la sección
         const sectionResult = await pool.query("SELECT * FROM sections WHERE id_section = $1 and id_user = $2", [id_section, id_user]);
