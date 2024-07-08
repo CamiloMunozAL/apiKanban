@@ -16,7 +16,7 @@ This API provides endpoints for user authentication, including registration, log
 
 ### Register User
 
-- **URL:** `POST /auth/register`
+- **URL:** `POST /register`
 - **Description:** Registers a new user with the provided username, email, and password.
 - **Request Body:**
   "username": "string",
@@ -30,7 +30,7 @@ This API provides endpoints for user authentication, including registration, log
 
 ### Login User
 
-- **URL:** `POST /auth/login`
+- **URL:** `POST /login`
 - **Description:** Logs in a user with the provided email and password, generating a JWT token for authentication.
 - **Request Body:**
   "email": "string",
@@ -43,7 +43,7 @@ This API provides endpoints for user authentication, including registration, log
 
 ### Logout User
 
-- **URL:** `GET /auth/logout`
+- **URL:** `GET /logout`
 - **Description:** Logs out the currently authenticated user by clearing the access token cookie.
 - **Responses:**
   - `200 OK`: User successfully logged out.
